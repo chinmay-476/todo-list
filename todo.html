@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .bg-container {
+            background: linear-gradient(to bottom, #4A90E2, #D1C6F0);
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .high-priority {
+            border-left: 5px solid red;
+        }
+
+        .medium-priority {
+            border-left: 5px solid orange;
+        }
+
+        .low-priority {
+            border-left: 5px solid green;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: grey;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="section-todo">
+        <div class="bg-container d-flex flex-row justify-content-center">
+            <div class="container mt-5">
+                <h1 class="text-center">Todos<br>Create List</h1>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="What needs to be done?" id="new-task-input">
+                    <input type="datetime-local" class="form-control" id="task-due-date">
+                    <select class="custom-select" id="priority-select">
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" onclick="addTask()">Add Task</button>
+                    </div>
+                </div>
+                <h1 class="heading text-center">My Tasks</h1>
+                <div class="priority-section high-priority">
+                    <p>High Priority (<span id="high-task-count">0</span>)</p>
+                    <ul class="list-group" id="high-priority-list"></ul>
+                </div>
+
+                <div class="priority-section medium-priority">
+                    <p>Medium Priority (<span id="medium-task-count">0</span>)</p>
+                    <ul class="list-group" id="medium-priority-list"></ul>
+                </div>
+                <div class="priority-section low-priority">
+                    <p>Low Priority (<span id="low-task-count">0</span>)</p>
+                    <ul class="list-group" id="low-priority-list"></ul>
+                </div>
+                <button class="btn btn-primary" id="save-button">Save</button>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addTask() {
+            const taskInput = document.getElementById('new-task-input');
+            const prioritySelect = document.getElementById('priority-select');
+            const dueDateInput = document.getElementById('task-due-date');
+            const priority = prioritySelect.value;
+            const dueDate = dueDateInput.value ? new Date(dueDateInput.value).toLocaleString() : 'No due date';
+
+            if (taskInput.value.trim() !== '') {
+                const newTask = document.createElement('li');
+                newTask.className = 'list-group-item d-flex justify-content-between align-items-center';
+                newTask.innerHTML = `
+            <input type="checkbox" onchange="toggleComplete(this)">
+            <span class="task-text">${taskInput.value} (Due: ${dueDate})</span>
+            <button class='btn btn-danger btn-sm' onclick='removeTask(this)'>Remove</button>
+            <span class="completed-time" style="display:none;"></span>
+        `;
+
+                document.getElementById(priority + '-priority-list').appendChild(newTask);
+                taskInput.value = '';
+                dueDateInput.value = '';
+                updateTaskCount(priority);
+            }
+        }
+
+        function removeTask(button) {
+            const taskItem = button.parentElement;
+            const priority = taskItem.parentElement.id.split('-')[0]; // Get priority from list ID
+            taskItem.remove();
+            updateTaskCount(priority);
+        }
+
+        function toggleComplete(checkbox) {
+            const taskText = checkbox.nextElementSibling;
+            const completedTime = checkbox.parentElement.querySelector('.completed-time');
+
+            if (checkbox.checked) {
+                taskText.classList.add('completed');
+                completedTime.textContent = `Completed on: ${new Date().toLocaleString()}`;
+                completedTime.style.display = 'inline';
+            } else {
+                taskText.classList.remove('completed');
+                completedTime.style.display = 'none';
+            }
+        }
+
+        function updateTaskCount(priority) {
+            const taskCountElement = document.getElementById(priority + '-task-count');
+            const totalTasks = document.getElementById(priority + '-priority-list').children.length;
+            taskCountElement.textContent = totalTasks;
+        }
+
+        function saveTasks() {
+            const tasks = {
+                high: [],
+                medium: [],
+                low: []
+            };
+
+            ['high', 'medium', 'low'].forEach(priority => {
+                const taskListItems = document.getElementById(priority + '-priority-list').children;
+                for (let item of taskListItems) {
+                    const taskText = item.querySelector('.task-text').textContent;
+                    const dueDate = taskText.includes('(Due:') ? taskText.split('(Due: ')[1].slice(0, -1) : 'No due date';
+                    const completed = item.querySelector('input[type="checkbox"]').checked;
+                    const completedDate = completed ? item.querySelector('.completed-time').textContent.split(': ')[1] : '';
+
+                    tasks[priority].push({
+                        text: taskText.split(' (Due:')[0],
+                        dueDate,
+                        completed,
+                        completedDate
+                    });
+                }
+            });
+
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            alert('Tasks saved successfully!');
+        }
+
+        document.getElementById('save-button').addEventListener('click', saveTasks);
+
+        function loadTasks() {
+            const savedTasks = JSON.parse(localStorage.getItem('tasks'));
+            if (savedTasks) {
+                for (const priority in savedTasks) {
+                    savedTasks[priority].forEach(task => {
+                        const newTask = document.createElement('li');
+                        newTask.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        newTask.innerHTML = `
+                    <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleComplete(this)">
+                    <span class="task-text">${task.text} (Due: ${task.dueDate})</span>
+                    <button class='btn btn-danger btn-sm' onclick='removeTask(this)'>Remove</button>
+                    <span class="completed-time" style="display:${task.completed ? 'inline' : 'none'};">
+                        Completed on: ${task.completed ? task.completedDate : ''}
+                    </span>
+                `;
+                        document.getElementById(priority + '-priority-list').appendChild(newTask);
+                    });
+                    updateTaskCount(priority); // Update task count for each priority
+                }
+            }
+        }
+
+        // Load tasks when the page loads
+        loadTasks();
+    </script>
+</body>
+
+</html>
