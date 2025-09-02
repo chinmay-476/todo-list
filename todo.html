@@ -4,191 +4,610 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODO List</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>TaskMaster Pro - Professional Task Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #7c3aed;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .bg-container {
-            background: linear-gradient(to bottom, #4A90E2, #D1C6F0);
-            height: 100vh;
-            width: 100vw;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
         }
 
-        .high-priority {
-            border-left: 5px solid red;
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        .medium-priority {
-            border-left: 5px solid orange;
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
         }
 
-        .low-priority {
-            border-left: 5px solid green;
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .completed {
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .task-input-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .task-input-section h3 {
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .priority-section {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .priority-header {
+            padding: 1.5rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .priority-header i {
+            margin-right: 0.5rem;
+        }
+
+        .high-priority .priority-header {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .medium-priority .priority-header {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .low-priority .priority-header {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .task-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-item:hover {
+            background: var(--light-color);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-text {
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .task-meta {
+            font-size: 0.875rem;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .task-due {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .task-completed {
             text-decoration: line-through;
-            color: grey;
+            opacity: 0.6;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: 8px;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border: none;
+            color: white;
+        }
+
+        .save-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .overdue {
+            color: var(--danger-color) !important;
+        }
+
+        .due-soon {
+            color: var(--warning-color) !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .task-input-section {
+                padding: 1.5rem;
+            }
+            
+            .task-item {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .task-actions {
+                align-self: flex-end;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--success-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
         }
     </style>
 </head>
 
 <body>
+    <div class="main-container">
+        <div class="header">
+            <h1><i class="fas fa-tasks"></i> TaskMaster Pro</h1>
+            <p>Professional Task Management System</p>
+        </div>
 
-    <div id="section-todo">
-        <div class="bg-container d-flex flex-row justify-content-center">
-            <div class="container mt-5">
-                <h1 class="text-center">Todos<br>Create List</h1>
-                <div class="input-group mb-3">
+        <div class="task-input-section">
+            <h3><i class="fas fa-plus-circle"></i> Add New Task</h3>
+            <div class="row g-3">
+                <div class="col-md-6">
                     <input type="text" class="form-control" placeholder="What needs to be done?" id="new-task-input">
+                </div>
+                <div class="col-md-3">
                     <input type="datetime-local" class="form-control" id="task-due-date">
-                    <select class="custom-select" id="priority-select">
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="priority-select">
                         <option value="high">High Priority</option>
                         <option value="medium">Medium Priority</option>
                         <option value="low">Low Priority</option>
                     </select>
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="button" onclick="addTask()">Add Task</button>
-                    </div>
                 </div>
-                <h1 class="heading text-center">My Tasks</h1>
-                <div class="priority-section high-priority">
-                    <p>High Priority (<span id="high-task-count">0</span>)</p>
-                    <ul class="list-group" id="high-priority-list"></ul>
+                <div class="col-md-1">
+                    <button class="btn btn-primary w-100" onclick="addTask()">
+                        <i class="fas fa-plus"></i>
+                    </button>
                 </div>
-
-                <div class="priority-section medium-priority">
-                    <p>Medium Priority (<span id="medium-task-count">0</span>)</p>
-                    <ul class="list-group" id="medium-priority-list"></ul>
-                </div>
-                <div class="priority-section low-priority">
-                    <p>Low Priority (<span id="low-task-count">0</span>)</p>
-                    <ul class="list-group" id="low-priority-list"></ul>
-                </div>
-                <button class="btn btn-primary" id="save-button">Save</button>
-
             </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--danger-color);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-number" id="high-total">0</div>
+                <div>High Priority</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--warning-color);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number" id="medium-total">0</div>
+                <div>Medium Priority</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--success-color);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number" id="low-total">0</div>
+                <div>Low Priority</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--primary-color);">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-number" id="completed-total">0</div>
+                <div>Completed</div>
+            </div>
+        </div>
+
+        <div class="priority-section high-priority">
+            <div class="priority-header">
+                <span><i class="fas fa-fire"></i> High Priority</span>
+                <span class="badge bg-danger" id="high-task-count">0</span>
+            </div>
+            <div id="high-priority-list"></div>
+        </div>
+
+        <div class="priority-section medium-priority">
+            <div class="priority-header">
+                <span><i class="fas fa-clock"></i> Medium Priority</span>
+                <span class="badge bg-warning" id="medium-task-count">0</span>
+            </div>
+            <div id="medium-priority-list"></div>
+        </div>
+
+        <div class="priority-section low-priority">
+            <div class="priority-header">
+                <span><i class="fas fa-leaf"></i> Low Priority</span>
+                <span class="badge bg-success" id="low-task-count">0</span>
+            </div>
+            <div id="low-priority-list"></div>
+        </div>
+
+        <div class="save-section">
+            <button class="btn btn-save" onclick="saveTasks()">
+                <i class="fas fa-save"></i> Save All Tasks
+            </button>
         </div>
     </div>
 
+    <div class="notification" id="notification"></div>
+
     <script>
+        let tasks = { high: [], medium: [], low: [] };
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
         function addTask() {
             const taskInput = document.getElementById('new-task-input');
             const prioritySelect = document.getElementById('priority-select');
             const dueDateInput = document.getElementById('task-due-date');
+            
+            const taskText = taskInput.value.trim();
             const priority = prioritySelect.value;
-            const dueDate = dueDateInput.value ? new Date(dueDateInput.value).toLocaleString() : 'No due date';
+            const dueDate = dueDateInput.value;
 
-            if (taskInput.value.trim() !== '') {
-                const newTask = document.createElement('li');
-                newTask.className = 'list-group-item d-flex justify-content-between align-items-center';
-                newTask.innerHTML = `
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <span class="task-text">${taskInput.value} (Due: ${dueDate})</span>
-            <button class='btn btn-danger btn-sm' onclick='removeTask(this)'>Remove</button>
-            <span class="completed-time" style="display:none;"></span>
-        `;
+            if (taskText === '') {
+                showNotification('Please enter a task description', 'error');
+                return;
+            }
 
-                document.getElementById(priority + '-priority-list').appendChild(newTask);
-                taskInput.value = '';
-                dueDateInput.value = '';
-                updateTaskCount(priority);
+            const task = {
+                id: Date.now().toString(),
+                text: taskText,
+                dueDate: dueDate,
+                completed: false,
+                completedDate: null,
+                createdDate: new Date().toISOString()
+            };
+
+            tasks[priority].push(task);
+            renderTasks();
+            updateStats();
+
+            // Clear inputs
+            taskInput.value = '';
+            dueDateInput.value = '';
+            
+            showNotification('Task added successfully!');
+        }
+
+        function removeTask(priority, taskId) {
+            tasks[priority] = tasks[priority].filter(task => task.id !== taskId);
+            renderTasks();
+            updateStats();
+            showNotification('Task removed successfully!');
+        }
+
+        function toggleComplete(priority, taskId) {
+            const task = tasks[priority].find(task => task.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                task.completedDate = task.completed ? new Date().toISOString() : null;
+                renderTasks();
+                updateStats();
+                
+                const message = task.completed ? 'Task completed!' : 'Task unchecked!';
+                showNotification(message);
             }
         }
 
-        function removeTask(button) {
-            const taskItem = button.parentElement;
-            const priority = taskItem.parentElement.id.split('-')[0]; // Get priority from list ID
-            taskItem.remove();
-            updateTaskCount(priority);
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
 
-        function toggleComplete(checkbox) {
-            const taskText = checkbox.nextElementSibling;
-            const completedTime = checkbox.parentElement.querySelector('.completed-time');
-
-            if (checkbox.checked) {
-                taskText.classList.add('completed');
-                completedTime.textContent = `Completed on: ${new Date().toLocaleString()}`;
-                completedTime.style.display = 'inline';
-            } else {
-                taskText.classList.remove('completed');
-                completedTime.style.display = 'none';
-            }
+        function getDueDateStatus(dueDate) {
+            if (!dueDate) return '';
+            
+            const now = new Date();
+            const due = new Date(dueDate);
+            const timeDiff = due - now;
+            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            
+            if (timeDiff < 0) return 'overdue';
+            if (daysDiff <= 1) return 'due-soon';
+            return '';
         }
 
-        function updateTaskCount(priority) {
-            const taskCountElement = document.getElementById(priority + '-task-count');
-            const totalTasks = document.getElementById(priority + '-priority-list').children.length;
-            taskCountElement.textContent = totalTasks;
+        function renderTasks() {
+            ['high', 'medium', 'low'].forEach(priority => {
+                const container = document.getElementById(`${priority}-priority-list`);
+                container.innerHTML = '';
+
+                if (tasks[priority].length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No ${priority} priority tasks yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                tasks[priority].forEach(task => {
+                    const dueDateStatus = getDueDateStatus(task.dueDate);
+                    const dueText = task.dueDate ? formatDate(task.dueDate) : 'No due date';
+                    
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'task-item';
+                    taskElement.innerHTML = `
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} 
+                               onchange="toggleComplete('${priority}', '${task.id}')">
+                        <div class="task-content">
+                            <div class="task-text ${task.completed ? 'task-completed' : ''}">${task.text}</div>
+                            <div class="task-meta">
+                                <span class="task-due ${dueDateStatus}">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    ${dueText}
+                                </span>
+                                ${task.completed ? `<span><i class="fas fa-check"></i> Completed on ${formatDate(task.completedDate)}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn btn-danger btn-sm" onclick="removeTask('${priority}', '${task.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(taskElement);
+                });
+            });
+        }
+
+        function updateStats() {
+            ['high', 'medium', 'low'].forEach(priority => {
+                const count = tasks[priority].length;
+                document.getElementById(`${priority}-task-count`).textContent = count;
+                document.getElementById(`${priority}-total`).textContent = count;
+            });
+
+            const completedCount = Object.values(tasks).flat().filter(task => task.completed).length;
+            document.getElementById('completed-total').textContent = completedCount;
         }
 
         function saveTasks() {
-            const tasks = {
-                high: [],
-                medium: [],
-                low: []
-            };
-
-            ['high', 'medium', 'low'].forEach(priority => {
-                const taskListItems = document.getElementById(priority + '-priority-list').children;
-                for (let item of taskListItems) {
-                    const taskText = item.querySelector('.task-text').textContent;
-                    const dueDate = taskText.includes('(Due:') ? taskText.split('(Due: ')[1].slice(0, -1) : 'No due date';
-                    const completed = item.querySelector('input[type="checkbox"]').checked;
-                    const completedDate = completed ? item.querySelector('.completed-time').textContent.split(': ')[1] : '';
-
-                    tasks[priority].push({
-                        text: taskText.split(' (Due:')[0],
-                        dueDate,
-                        completed,
-                        completedDate
-                    });
-                }
-            });
-
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-            alert('Tasks saved successfully!');
-        }
-
-        document.getElementById('save-button').addEventListener('click', saveTasks);
-
-        function loadTasks() {
-            const savedTasks = JSON.parse(localStorage.getItem('tasks'));
-            if (savedTasks) {
-                for (const priority in savedTasks) {
-                    savedTasks[priority].forEach(task => {
-                        const newTask = document.createElement('li');
-                        newTask.className = 'list-group-item d-flex justify-content-between align-items-center';
-                        newTask.innerHTML = `
-                    <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleComplete(this)">
-                    <span class="task-text">${task.text} (Due: ${task.dueDate})</span>
-                    <button class='btn btn-danger btn-sm' onclick='removeTask(this)'>Remove</button>
-                    <span class="completed-time" style="display:${task.completed ? 'inline' : 'none'};">
-                        Completed on: ${task.completed ? task.completedDate : ''}
-                    </span>
-                `;
-                        document.getElementById(priority + '-priority-list').appendChild(newTask);
-                    });
-                    updateTaskCount(priority); // Update task count for each priority
-                }
+            try {
+                const tasksData = {
+                    tasks: tasks,
+                    savedAt: new Date().toISOString()
+                };
+                
+                // Create downloadable file
+                const dataStr = JSON.stringify(tasksData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `tasks_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+                showNotification('Tasks exported successfully!');
+            } catch (error) {
+                showNotification('Error saving tasks', 'error');
             }
         }
 
-        // Load tasks when the page loads
-        loadTasks();
+        // Add task with Enter key
+        document.getElementById('new-task-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // Initialize
+        renderTasks();
+        updateStats();
     </script>
 </body>
 
